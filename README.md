@@ -28,7 +28,7 @@ Guhao Feng\*, Shengjie Luo\*, Kai Hua, Ge Zhang, Wenhao Huang, Di He, Tianle Cai
 <p align="center">
   <a href="https://openreview.net/forum?id=dTWfCLSoyl">
     <img src="https://img.shields.io/badge/ICLR%202026-Oral-b31b1b?style=for-the-badge"></a>
-  <a href="https://openreview.net/pdf?id=dTWfCLSoyl">
+  <a href="https://arxiv.org/abs/2604.06169">
     <img src="https://img.shields.io/badge/Paper-PDF-blue?style=for-the-badge&logo=adobeacrobatreader"></a>
   <a href="#license">
     <img src="https://img.shields.io/badge/License-Apache%202.0-green?style=for-the-badge"></a>
