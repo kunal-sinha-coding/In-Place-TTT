@@ -44,12 +44,21 @@ In-Place TTT is a drop-in test-time training method for Transformer LLMs. This r
 
 ## Table of Contents
 
-- [Introduction](#introduction)
-- [Getting Started](#getting-started)
-- [Features](#features)
-- [License](#license)
-- [Citation](#citation)
-- [About ByteDance Seed Team](#about-bytedance-seed-team)
+- [In-Place Test-Time Training](#in-place-test-time-training)
+  - [News](#news)
+  - [Table of Contents](#table-of-contents)
+  - [Introduction](#introduction)
+  - [Getting Started](#getting-started)
+    - [Environment Setup](#environment-setup)
+    - [Data Preparation](#data-preparation)
+    - [Recommended Config](#recommended-config)
+    - [Training](#training)
+    - [Checkpoint Conversion](#checkpoint-conversion)
+    - [Evaluation](#evaluation)
+  - [Features](#features)
+  - [License](#license)
+  - [Citation](#citation)
+  - [About ByteDance Seed Team](#about-bytedance-seed-team)
 
 ## Introduction
 
@@ -143,6 +152,8 @@ bash train.sh tasks/train_torch.py configs/pretrain/qwen3_longct.yaml \
 ### Recommended Config
 
 Below is the recommended model config pattern used in the provided Qwen and LLaMA examples.
+
+> **Tip:** Set `ttt_target: input_embed` for from-scratch pretraining, or `ttt_target: hidden_states` for continual training.
 
 ```yaml
 model:
@@ -279,7 +290,7 @@ If you find this work useful for your research and applications, feel free to gi
   booktitle = {International Conference on Learning Representations (ICLR)},
   year      = {2026},
   note      = {Oral Presentation},
-  url       = {https://openreview.net/forum?id=dTWfCLSoyl}
+  url       = {https://arxiv.org/abs/2604.06169}
 }
 ```
 
