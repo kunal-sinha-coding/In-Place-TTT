@@ -183,9 +183,13 @@ def main():
         if args.model.foundation is None:
             args.model.foundation = {}
         args.model.foundation.update(foundation_override)
+    if get_device_type() == "cpu" and args.model.attn_implementation == "flash_attention_2":
+        logger.info("CPU detected; overriding attn_implementation from flash_attention_2 to eager.")
+        args.model.attn_implementation = "eager"
     logger.info(f"Process rank: {args.train.global_rank}, world size: {args.train.world_size}")
     logger.info_rank0(json.dumps(asdict(args), indent=2))
-    get_torch_device().set_device(f"{get_device_type()}:{args.train.local_rank}")
+    if get_device_type() != "cpu":
+        get_torch_device().set_device(f"{get_device_type()}:{args.train.local_rank}")
     helper.set_seed(args.train.seed, args.train.enable_full_determinism)
     if args.train.local_rank == 0:
         helper.enable_third_party_logging()

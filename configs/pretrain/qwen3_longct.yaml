@@ -13,7 +13,7 @@
 # limitations under the License.
 
 model:
-  model_path: /path/to/your_base_model
+  model_path: Qwen/Qwen3-14B #/path/to/your_base_model
   foundation:
     ttt_layers: [0, 6, 12, 18, 24, 30, 36]
     ttt_mode: true
@@ -22,7 +22,7 @@ model:
     ttt_chunk: 4096
 
 data:
-  train_path: /path/to/your_data
+  train_path: data/paul_graham_essays.jsonl #/path/to/your_data
   train_size: 20000000000
   dataloader_type: native
   datasets_type: iterable
@@ -32,7 +32,7 @@ data:
   drop_last: true
 
 train:
-  output_dir: /path/to/your_output_dir
+  output_dir: outputs #/path/to/your_output_dir
   data_parallel_mode: fsdp2
   ulysses_parallel_size: 1
   global_batch_size: 64
