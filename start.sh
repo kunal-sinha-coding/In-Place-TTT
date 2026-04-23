@@ -4,10 +4,11 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 VENV_DIR="${SCRIPT_DIR}/ttt"
+RULER_DIR="${SCRIPT_DIR}/../RULER"
 WHEEL_NAME="flash_attn-2.8.3+cu12torch2.8cxx11abiTRUE-cp311-cp311-linux_x86_64.whl"
 LOCAL_WHEEL="${SCRIPT_DIR}/${WHEEL_NAME}"
 WHEEL_URL="https://github.com/Dao-AILab/flash-attention/releases/download/v2.8.3/${WHEEL_NAME}"
-RULER_INPUT="${SCRIPT_DIR}/../RULER/scripts/data/synthetic/json/PaulGrahamEssays.json"
+RULER_INPUT="${RULER_DIR}/scripts/data/synthetic/json/PaulGrahamEssays.json"
 DATA_OUTPUT="${SCRIPT_DIR}/data/paul_graham_essays.jsonl"
 
 export PYTHONPATH="${SCRIPT_DIR}:${PYTHONPATH:-}"
@@ -76,9 +77,17 @@ print("veomni file:", veomni.__file__)
 print("direct_url:", json.loads(p.read_text()) if p.exists() else "not found")
 PY
 
+if [[ ! -d "${RULER_DIR}" ]]; then
+  git clone https://github.com/NVIDIA/RULER "${RULER_DIR}"
+fi
+
+pushd "${RULER_DIR}/scripts/data/synthetic/json" >/dev/null
+python download_paulgraham_essay.py
+popd >/dev/null
+
 if [[ ! -f "${RULER_INPUT}" ]]; then
   echo "Missing RULER input file: ${RULER_INPUT}" >&2
-  echo "Expected sibling checkout at ../RULER before dataset conversion." >&2
+  echo "RULER download step did not produce the expected file." >&2
   exit 1
 fi
 
