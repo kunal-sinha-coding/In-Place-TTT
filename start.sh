@@ -60,12 +60,9 @@ fi
 pip install "veomni @ git+https://github.com/ByteDance-Seed/VeOmni.git@9b91e164bea9e17f17ed490aab5e076c2335ca25"
 
 pip install liger-kernel
-pip install byted-wandb torchdata blobfile datasets diffusers tiktoken timm
+pip install wandb torchdata blobfile datasets diffusers tiktoken timm
 pip install transformers==4.57.3
 pip install opt_einsum einops
-
-pip uninstall -y byted-wandb wandb
-pip install byted-wandb
 
 python - <<'PY'
 import json
