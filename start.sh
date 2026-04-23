@@ -12,6 +12,8 @@ RULER_INPUT="${RULER_DIR}/scripts/data/synthetic/json/PaulGrahamEssays.json"
 DATA_OUTPUT="${SCRIPT_DIR}/data/paul_graham_essays.jsonl"
 
 export PYTHONPATH="${SCRIPT_DIR}:${PYTHONPATH:-}"
+export PIP_DISABLE_PIP_VERSION_CHECK=1
+export PIP_NO_CACHE_DIR=1
 
 choose_python() {
   if command -v python3.11 >/dev/null 2>&1; then
@@ -39,9 +41,10 @@ fi
 source "${VENV_DIR}/bin/activate"
 
 python --version
-pip install --upgrade pip setuptools wheel
+pip cache purge >/dev/null 2>&1 || true
+pip install --no-cache-dir --upgrade pip setuptools wheel
 
-pip install torch==2.8.0 torchvision==0.23.0 torchaudio==2.8.0 \
+pip install --no-cache-dir torch==2.8.0 torchvision==0.23.0 torchaudio==2.8.0 \
   --index-url https://download.pytorch.org/whl/cu128
 
 if [[ -f "${LOCAL_WHEEL}" ]]; then
@@ -51,18 +54,19 @@ else
   wget -O "${FLASH_WHEEL}" "${WHEEL_URL}"
 fi
 
-pip install "${FLASH_WHEEL}"
+pip install --no-cache-dir "${FLASH_WHEEL}"
 
 if [[ "${FLASH_WHEEL}" == "/tmp/${WHEEL_NAME}" ]]; then
   rm -f "${FLASH_WHEEL}"
 fi
 
-pip install "veomni @ git+https://github.com/ByteDance-Seed/VeOmni.git@9b91e164bea9e17f17ed490aab5e076c2335ca25"
+pip install --no-cache-dir "veomni @ git+https://github.com/ByteDance-Seed/VeOmni.git@9b91e164bea9e17f17ed490aab5e076c2335ca25"
 
-pip install liger-kernel
-pip install wandb torchdata blobfile datasets diffusers tiktoken timm
-pip install transformers==4.57.3
-pip install opt_einsum einops
+pip install --no-cache-dir liger-kernel
+pip install --no-cache-dir wandb torchdata blobfile datasets diffusers tiktoken timm
+pip install --no-cache-dir transformers==4.57.3
+pip install --no-cache-dir opt_einsum einops
+pip cache purge >/dev/null 2>&1 || true
 
 python - <<'PY'
 import json
@@ -75,7 +79,7 @@ print("direct_url:", json.loads(p.read_text()) if p.exists() else "not found")
 PY
 
 if [[ ! -d "${RULER_DIR}" ]]; then
-  git clone https://github.com/NVIDIA/RULER "${RULER_DIR}"
+  git clone --depth 1 https://github.com/NVIDIA/RULER "${RULER_DIR}"
 fi
 
 pushd "${RULER_DIR}/scripts/data/synthetic/json" >/dev/null
