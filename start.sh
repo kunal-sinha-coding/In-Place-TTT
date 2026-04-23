@@ -5,6 +5,8 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 VENV_DIR="${SCRIPT_DIR}/ttt"
 RULER_DIR="${SCRIPT_DIR}/../RULER"
+TMPDIR="${SCRIPT_DIR}/.tmp"
+XDG_CACHE_HOME="${SCRIPT_DIR}/.cache"
 WHEEL_NAME="flash_attn-2.8.3+cu12torch2.8cxx11abiTRUE-cp311-cp311-linux_x86_64.whl"
 LOCAL_WHEEL="${SCRIPT_DIR}/${WHEEL_NAME}"
 WHEEL_URL="https://github.com/Dao-AILab/flash-attention/releases/download/v2.8.3/${WHEEL_NAME}"
@@ -14,6 +16,19 @@ DATA_OUTPUT="${SCRIPT_DIR}/data/paul_graham_essays.jsonl"
 export PYTHONPATH="${SCRIPT_DIR}:${PYTHONPATH:-}"
 export PIP_DISABLE_PIP_VERSION_CHECK=1
 export PIP_NO_CACHE_DIR=1
+export TMPDIR
+export TEMP="${TMPDIR}"
+export TMP="${TMPDIR}"
+export XDG_CACHE_HOME
+export HF_HOME="${XDG_CACHE_HOME}/huggingface"
+export TRANSFORMERS_CACHE="${HF_HOME}/transformers"
+
+mkdir -p "${TMPDIR}" "${XDG_CACHE_HOME}" "${HF_HOME}" "${TRANSFORMERS_CACHE}"
+
+echo "Repo directory: ${SCRIPT_DIR}"
+echo "Virtualenv: ${VENV_DIR}"
+echo "Temp directory: ${TMPDIR}"
+echo "Cache directory: ${XDG_CACHE_HOME}"
 
 choose_python() {
   if command -v python3.11 >/dev/null 2>&1; then
@@ -50,13 +65,13 @@ pip install --no-cache-dir torch==2.8.0 torchvision==0.23.0 torchaudio==2.8.0 \
 if [[ -f "${LOCAL_WHEEL}" ]]; then
   FLASH_WHEEL="${LOCAL_WHEEL}"
 else
-  FLASH_WHEEL="/tmp/${WHEEL_NAME}"
+  FLASH_WHEEL="${TMPDIR}/${WHEEL_NAME}"
   wget -O "${FLASH_WHEEL}" "${WHEEL_URL}"
 fi
 
 pip install --no-cache-dir "${FLASH_WHEEL}"
 
-if [[ "${FLASH_WHEEL}" == "/tmp/${WHEEL_NAME}" ]]; then
+if [[ "${FLASH_WHEEL}" == "${TMPDIR}/${WHEEL_NAME}" ]]; then
   rm -f "${FLASH_WHEEL}"
 fi
 
@@ -67,6 +82,7 @@ pip install --no-cache-dir wandb torchdata blobfile datasets diffusers tiktoken 
 pip install --no-cache-dir transformers==4.57.3
 pip install --no-cache-dir opt_einsum einops
 pip cache purge >/dev/null 2>&1 || true
+rm -rf "${TMPDIR:?}/"*
 
 python - <<'PY'
 import json
