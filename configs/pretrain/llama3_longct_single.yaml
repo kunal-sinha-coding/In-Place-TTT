@@ -52,7 +52,7 @@ train:
   enable_mixed_precision: true
   enable_gradient_checkpointing: true
   enable_full_shard: false # Disable ZeRO-3 style full sharding when there is only one GPU.
-  init_device: meta
+  init_device: cuda
   ckpt_manager: dcp
   save_steps: 500
   save_hf_weights: true
