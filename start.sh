@@ -100,7 +100,18 @@ pip install --no-cache-dir "veomni @ git+https://github.com/ByteDance-Seed/VeOmn
 log_disk_usage "after veomni"
 
 pip install --no-cache-dir liger-kernel
-pip install --no-cache-dir wandb torchdata blobfile datasets diffusers tiktoken timm
+pip install --no-cache-dir \
+  wandb \
+  tqdm \
+  pyyaml \
+  sentencepiece \
+  safetensors \
+  torchdata \
+  blobfile \
+  datasets \
+  diffusers \
+  tiktoken \
+  timm
 pip install --no-cache-dir transformers==4.57.3
 pip install --no-cache-dir opt_einsum einops
 pip cache purge >/dev/null 2>&1 || true
