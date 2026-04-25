@@ -54,58 +54,33 @@ node_major_version() {
   node -p "process.versions.node.split('.')[0]" 2>/dev/null || echo 0
 }
 
-ensure_supported_node() {
-  local required_major=18
-  local current_major
-
-  current_major="$(node_major_version)"
-  if [[ "${current_major}" =~ ^[0-9]+$ ]] && (( current_major >= required_major )); then
-    return
-  fi
-
-  apt-get install -y curl ca-certificates
-  apt-get remove -y libnode-dev nodejs-doc npm || true
-  curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
-  apt-get install -y nodejs
-  hash -r
-
-  current_major="$(node_major_version)"
-  if [[ ! "${current_major}" =~ ^[0-9]+$ ]] || (( current_major < required_major )); then
-    echo "Node.js ${required_major}+ is required, but found: $(node --version 2>/dev/null || echo missing)" >&2
-    exit 1
-  fi
-}
-
-install_codex() {
-  local codex_version
-
-  codex_version="$(npm view @openai/codex version)"
-  if [[ -z "${codex_version}" ]]; then
-    echo "Failed to resolve the latest @openai/codex version from npm." >&2
-    exit 1
-  fi
-
-  npm install -g "@openai/codex@${codex_version}" "@openai/codex-linux-x64@${codex_version}"
-  hash -r
-
-  if ! command -v codex >/dev/null 2>&1; then
-    echo "Codex install completed, but the 'codex' command is not on PATH." >&2
-    exit 1
-  fi
-}
-
 PYTHON_BIN="$(choose_python)"
 
 echo "Using interpreter: ${PYTHON_BIN}"
 
 apt-get update
 apt-get install -y vim
-ensure_supported_node
+
+if ! command -v node >/dev/null 2>&1 || ! command -v npm >/dev/null 2>&1; then
+  apt-get install -y nodejs npm
+fi
+
+if (( $(node_major_version) < 18 )); then
+  echo "Node.js 18+ is required for Codex, but found: $(node --version 2>/dev/null || echo missing)" >&2
+  echo "Please install a newer Node.js runtime before running start.sh." >&2
+  exit 1
+fi
 
 echo "Using Node.js: $(node --version)"
 echo "Using npm: $(npm --version)"
 
-install_codex
+npm install -g @openai/codex
+hash -r
+
+if ! command -v codex >/dev/null 2>&1; then
+  echo "Codex install completed, but the 'codex' command is not on PATH." >&2
+  exit 1
+fi
 
 codex --version
 
