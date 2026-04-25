@@ -64,6 +64,7 @@ ensure_supported_node() {
   fi
 
   apt-get install -y curl ca-certificates
+  apt-get remove -y libnode-dev nodejs-doc npm || true
   curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
   apt-get install -y nodejs
   hash -r
