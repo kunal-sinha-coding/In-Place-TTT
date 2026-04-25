@@ -34,7 +34,6 @@ log_disk_usage() {
   local label="${1}"
   echo
   echo "== Disk usage: ${label} =="
-  df -h / "${SCRIPT_DIR}"
   du -sh \
     "${VENV_DIR}" \
     "${TMPDIR}" \
