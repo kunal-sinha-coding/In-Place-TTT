@@ -123,6 +123,9 @@ if [[ ! -d "${RULER_DIR}" ]]; then
 fi
 log_disk_usage "after ruler clone"
 
+pip install --no-cache-dir html2text beautifulsoup4
+log_disk_usage "after ruler download deps"
+
 pushd "${RULER_DIR}/scripts/data/synthetic/json" >/dev/null
 python download_paulgraham_essay.py
 popd >/dev/null
