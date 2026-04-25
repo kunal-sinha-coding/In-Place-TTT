@@ -17,6 +17,9 @@
 set -x
 set -o pipefail
 
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+
+export PYTHONPATH="${SCRIPT_DIR}:${PYTHONPATH}"
 export TOKENIZERS_PARALLELISM=false
 export TORCH_NCCL_AVOID_RECORD_STREAMS=1
 
