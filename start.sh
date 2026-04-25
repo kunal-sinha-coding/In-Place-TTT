@@ -49,6 +49,9 @@ PYTHON_BIN="$(choose_python)"
 
 echo "Using interpreter: ${PYTHON_BIN}"
 
+apt-get update
+apt-get install -y vim
+
 if [[ ! -d "${VENV_DIR}" ]]; then
   "${PYTHON_BIN}" -m venv "${VENV_DIR}"
 fi
