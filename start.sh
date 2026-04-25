@@ -45,16 +45,46 @@ choose_python() {
   exit 1
 }
 
+node_major_version() {
+  if ! command -v node >/dev/null 2>&1; then
+    echo 0
+    return
+  fi
+
+  node -p "process.versions.node.split('.')[0]" 2>/dev/null || echo 0
+}
+
+ensure_supported_node() {
+  local required_major=18
+  local current_major
+
+  current_major="$(node_major_version)"
+  if [[ "${current_major}" =~ ^[0-9]+$ ]] && (( current_major >= required_major )); then
+    return
+  fi
+
+  apt-get install -y curl ca-certificates
+  curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
+  apt-get install -y nodejs
+  hash -r
+
+  current_major="$(node_major_version)"
+  if [[ ! "${current_major}" =~ ^[0-9]+$ ]] || (( current_major < required_major )); then
+    echo "Node.js ${required_major}+ is required, but found: $(node --version 2>/dev/null || echo missing)" >&2
+    exit 1
+  fi
+}
+
 PYTHON_BIN="$(choose_python)"
 
 echo "Using interpreter: ${PYTHON_BIN}"
 
 apt-get update
 apt-get install -y vim
+ensure_supported_node
 
-if ! command -v node >/dev/null 2>&1 || ! command -v npm >/dev/null 2>&1; then
-  apt-get install -y nodejs npm
-fi
+echo "Using Node.js: $(node --version)"
+echo "Using npm: $(npm --version)"
 
 npm install -g @openai/codex
 hash -r
