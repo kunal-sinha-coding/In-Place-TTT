@@ -52,6 +52,20 @@ echo "Using interpreter: ${PYTHON_BIN}"
 apt-get update
 apt-get install -y vim
 
+if ! command -v node >/dev/null 2>&1 || ! command -v npm >/dev/null 2>&1; then
+  apt-get install -y nodejs npm
+fi
+
+npm install -g @openai/codex
+hash -r
+
+if ! command -v codex >/dev/null 2>&1; then
+  echo "Codex install completed, but the 'codex' command is not on PATH." >&2
+  exit 1
+fi
+
+codex --version
+
 if [[ ! -d "${VENV_DIR}" ]]; then
   "${PYTHON_BIN}" -m venv "${VENV_DIR}"
 fi
@@ -136,3 +150,4 @@ echo
 echo "Setup complete."
 echo "Activate the environment with:"
 echo "  source \"${VENV_DIR}/bin/activate\""
+echo "Codex CLI is available as: $(command -v codex)"
