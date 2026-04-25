@@ -76,6 +76,24 @@ ensure_supported_node() {
   fi
 }
 
+install_codex() {
+  local codex_version
+
+  codex_version="$(npm view @openai/codex version)"
+  if [[ -z "${codex_version}" ]]; then
+    echo "Failed to resolve the latest @openai/codex version from npm." >&2
+    exit 1
+  fi
+
+  npm install -g "@openai/codex@${codex_version}" "@openai/codex-linux-x64@${codex_version}"
+  hash -r
+
+  if ! command -v codex >/dev/null 2>&1; then
+    echo "Codex install completed, but the 'codex' command is not on PATH." >&2
+    exit 1
+  fi
+}
+
 PYTHON_BIN="$(choose_python)"
 
 echo "Using interpreter: ${PYTHON_BIN}"
@@ -87,13 +105,7 @@ ensure_supported_node
 echo "Using Node.js: $(node --version)"
 echo "Using npm: $(npm --version)"
 
-npm install -g @openai/codex
-hash -r
-
-if ! command -v codex >/dev/null 2>&1; then
-  echo "Codex install completed, but the 'codex' command is not on PATH." >&2
-  exit 1
-fi
+install_codex
 
 codex --version
 
