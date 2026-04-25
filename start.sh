@@ -114,9 +114,13 @@ fi
 
 pip install --no-cache-dir html2text beautifulsoup4
 
-pushd "${RULER_DIR}/scripts/data/synthetic/json" >/dev/null
-python download_paulgraham_essay.py
-popd >/dev/null
+if [[ ! -f "${RULER_INPUT}" ]]; then
+  pushd "${RULER_DIR}/scripts/data/synthetic/json" >/dev/null
+  python download_paulgraham_essay.py
+  popd >/dev/null
+else
+  echo "RULER input already exists at ${RULER_INPUT}; skipping download."
+fi
 
 if [[ ! -f "${RULER_INPUT}" ]]; then
   echo "Missing RULER input file: ${RULER_INPUT}" >&2
