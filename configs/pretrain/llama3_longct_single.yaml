@@ -27,7 +27,7 @@ data:
   dataloader_type: native
   datasets_type: iterable
   data_type: plaintext
-  max_seq_len: 65536
+  max_seq_len: 16384
   text_keys: content_split
   drop_last: true
 
@@ -37,7 +37,7 @@ train:
   ulysses_parallel_size: 1
   global_batch_size: 1 # Keep the effective batch on one device to avoid multi-GPU assumptions.
   micro_batch_size: 1
-  rmpad: false
+  rmpad: true
   use_wandb: true
   max_steps: 5000
   rmpad_with_pos_ids: false
@@ -51,6 +51,8 @@ train:
   max_grad_norm: 1.0
   enable_mixed_precision: false # Switched because false makes us use bfloat16. Name is seemingly backwards
   enable_gradient_checkpointing: true
+  enable_activation_offload: true
+  activation_gpu_limit: 2.0
   enable_full_shard: false # Disable ZeRO-3 style full sharding when there is only one GPU.
   init_device: cuda
   ckpt_manager: dcp
