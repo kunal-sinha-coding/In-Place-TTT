@@ -45,44 +45,12 @@ choose_python() {
   exit 1
 }
 
-node_major_version() {
-  if ! command -v node >/dev/null 2>&1; then
-    echo 0
-    return
-  fi
-
-  node -p "process.versions.node.split('.')[0]" 2>/dev/null || echo 0
-}
-
 PYTHON_BIN="$(choose_python)"
 
 echo "Using interpreter: ${PYTHON_BIN}"
 
 apt-get update
 apt-get install -y vim
-
-if ! command -v node >/dev/null 2>&1 || ! command -v npm >/dev/null 2>&1; then
-  apt-get install -y nodejs npm
-fi
-
-if (( $(node_major_version) < 18 )); then
-  echo "Node.js 18+ is required for Codex, but found: $(node --version 2>/dev/null || echo missing)" >&2
-  echo "Please install a newer Node.js runtime before running start.sh." >&2
-  exit 1
-fi
-
-echo "Using Node.js: $(node --version)"
-echo "Using npm: $(npm --version)"
-
-npm install -g @openai/codex
-hash -r
-
-if ! command -v codex >/dev/null 2>&1; then
-  echo "Codex install completed, but the 'codex' command is not on PATH." >&2
-  exit 1
-fi
-
-codex --version
 
 if [[ ! -d "${VENV_DIR}" ]]; then
   "${PYTHON_BIN}" -m venv "${VENV_DIR}"
