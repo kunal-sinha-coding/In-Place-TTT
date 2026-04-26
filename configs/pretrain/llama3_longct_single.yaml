@@ -27,9 +27,10 @@ data:
   dataloader_type: native
   datasets_type: iterable
   data_type: plaintext
-  max_seq_len: 16384
+  max_seq_len: 8192
   text_keys: content_split
   drop_last: true
+  num_workers: 1
 
 train:
   output_dir: outputs #/path/to/your_output_dir
@@ -37,7 +38,7 @@ train:
   ulysses_parallel_size: 1
   global_batch_size: 1 # Keep the effective batch on one device to avoid multi-GPU assumptions.
   micro_batch_size: 1
-  rmpad: true
+  rmpad: false
   use_wandb: true
   max_steps: 5000
   rmpad_with_pos_ids: false
