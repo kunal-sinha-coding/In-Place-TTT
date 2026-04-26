@@ -49,7 +49,7 @@ train:
   lr_decay_ratio: 0.90
   weight_decay: 0.1
   max_grad_norm: 1.0
-  enable_mixed_precision: true
+  enable_mixed_precision: false # Switched because false makes us use bfloat16. Name is seemingly backwards
   enable_gradient_checkpointing: true
   enable_full_shard: false # Disable ZeRO-3 style full sharding when there is only one GPU.
   init_device: cuda
