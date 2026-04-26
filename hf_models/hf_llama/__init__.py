@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import os
+
 from .configuration_llama import LlamaConfig
 from .modeling_llama import LlamaModel, LlamaForCausalLM
 from liger_kernel.transformers.model.llama import lce_forward as llama_lce_forward
@@ -21,4 +23,6 @@ AutoConfig.register("llama", LlamaConfig, exist_ok=True)
 AutoModel.register(LlamaConfig, LlamaModel, exist_ok=True)
 AutoModelForCausalLM.register(LlamaConfig, LlamaForCausalLM, exist_ok=True)
 
-LlamaForCausalLM.forward = llama_lce_forward
+# Changed to make the Liger loss patch optional, since the fused LM-head loss can OOM on single-GPU runs.
+if os.environ.get("USE_LIGER_KERNEL", "1") == "1":
+    LlamaForCausalLM.forward = llama_lce_forward
