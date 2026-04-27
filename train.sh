@@ -22,6 +22,12 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 export PYTHONPATH="${SCRIPT_DIR}:${PYTHONPATH}"
 export TOKENIZERS_PARALLELISM=false
 export TORCH_NCCL_AVOID_RECORD_STREAMS=1
+export XDG_CACHE_HOME="${SCRIPT_DIR}/.cache"
+export HF_HOME="${XDG_CACHE_HOME}/huggingface"
+export HUGGINGFACE_HUB_CACHE="${HF_HOME}/hub"
+export TRANSFORMERS_CACHE="${HF_HOME}/transformers"
+
+mkdir -p "${HUGGINGFACE_HUB_CACHE}" "${TRANSFORMERS_CACHE}"
 
 NNODES=${NNODES:=1}
 if command -v nvidia-smi &> /dev/null && nvidia-smi --list-gpus &> /dev/null; then
