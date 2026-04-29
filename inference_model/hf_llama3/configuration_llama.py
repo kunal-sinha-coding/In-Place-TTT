@@ -225,8 +225,8 @@ class LlamaConfig(PretrainedConfig):
         self.ttt_lr = ttt_lr
         self.ttt_chunk = ttt_chunk
         self.ttt_target = ttt_target
-        if self.ttt_target not in {"hidden_states", "input_embed"}:
-            raise ValueError("ttt_target must be one of {'hidden_states', 'input_embed'}")
+        if self.ttt_target not in {"hidden_states", "input_embed", "freeze"}:
+            raise ValueError("ttt_target must be one of {'hidden_states', 'input_embed', 'freeze'}")
         # Validate the correctness of rotary position embeddings parameters
         # BC: if there is a 'type' field, copy it it to 'rope_type'.
         if self.rope_scaling is not None and "type" in self.rope_scaling:

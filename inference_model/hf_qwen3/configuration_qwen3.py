@@ -236,8 +236,8 @@ class Qwen3Config(PretrainedConfig):
         self.ttt_lr = ttt_lr
         self.ttt_chunk = ttt_chunk
         self.ttt_target = ttt_target
-        if self.ttt_target not in {"hidden_states", "input_embed"}:
-            raise ValueError("ttt_target must be one of {'hidden_states', 'input_embed'}")
+        if self.ttt_target not in {"hidden_states", "input_embed", "freeze"}:
+            raise ValueError("ttt_target must be one of {'hidden_states', 'input_embed', 'freeze'}")
 
         super().__init__(
             tie_word_embeddings=tie_word_embeddings,

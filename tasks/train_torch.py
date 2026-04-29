@@ -168,6 +168,21 @@ def _build_dataloader_compat(args, train_dataset, train_steps):
     return build_dataloader(dataloader_type=args.data.dataloader_type, **dataloader_kwargs)
 
 
+def _freeze_backbone_for_ttt(model) -> List[str]:
+    model.requires_grad_(False)
+    trainable_param_names = []
+    for name, param in model.named_parameters():
+        if ".ttt_proj." in name or ".ttt_conv." in name:
+            param.requires_grad_(True)
+            trainable_param_names.append(name)
+    if not trainable_param_names:
+        raise ValueError(
+            "ttt_target=freeze was requested, but no TTT-specific trainable parameters were found. "
+            "Check that ttt_mode is enabled and the selected ttt_layers create ttt_proj/ttt_conv modules."
+        )
+    return trainable_param_names
+
+
 def main():
     foundation_override = _pop_dict_cli_arg("--model.foundation")
 
@@ -269,6 +284,12 @@ def main():
         config_kwargs=args.model.foundation,
     )
     model_config = model.config
+    if getattr(model_config, "ttt_target", None) == "freeze":
+        trainable_param_names = _freeze_backbone_for_ttt(model)
+        logger.info_rank0(
+            f"ttt_target=freeze: froze pretrained backbone and left {len(trainable_param_names)} TTT parameters trainable: "
+            f"{trainable_param_names}"
+        )
     helper.print_device_mem_info("VRAM usage after building model")
 
     get_optimizer_pre_hook = getattr(model, "get_optimizer_pre_hook", None)
