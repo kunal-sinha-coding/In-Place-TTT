@@ -170,15 +170,28 @@ def _build_dataloader_compat(args, train_dataset, train_steps):
 
 def _freeze_backbone_for_ttt(model) -> List[str]:
     model.requires_grad_(False)
+    ttt_layers = set(getattr(model.config, "ttt_layers", []))
     trainable_param_names = []
     for name, param in model.named_parameters():
-        if ".ttt_proj." in name or ".ttt_conv." in name:
+        parts = name.split(".")
+        try:
+            layer_idx = parts.index("layers") + 1
+            layer_num = int(parts[layer_idx])
+        except (ValueError, IndexError):
+            continue
+        if layer_num not in ttt_layers:
+            continue
+        if (
+            ".mlp.down_proj.weight" in name
+            or ".mlp.ttt_proj.weight" in name
+            or ".mlp.ttt_conv.weight" in name
+        ):
             param.requires_grad_(True)
             trainable_param_names.append(name)
     if not trainable_param_names:
         raise ValueError(
-            "ttt_target=freeze was requested, but no TTT-specific trainable parameters were found. "
-            "Check that ttt_mode is enabled and the selected ttt_layers create ttt_proj/ttt_conv modules."
+            "ttt_target=freeze was requested, but no TTT-layer continual-training weights were found. "
+            "Check that ttt_mode is enabled and ttt_layers matches the model layer names."
         )
     return trainable_param_names
 
