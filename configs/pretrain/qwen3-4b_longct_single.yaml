@@ -56,5 +56,6 @@ train:
   enable_full_shard: true
   init_device: cuda #meta # Change based on the hardware I have
   ckpt_manager: dcp
+  save_checkpoints: false # Added this argument
   save_steps: 500
-  save_hf_weights: true
+  save_hf_weights: false # Set to false
