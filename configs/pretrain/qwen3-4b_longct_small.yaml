@@ -28,15 +28,16 @@ data:
   dataloader_type: native
   datasets_type: iterable
   data_type: plaintext
-  max_seq_len: 65536
+  max_seq_len: 8192
   text_keys: content_split
   drop_last: true
+  num_workers: 1
 
 train:
   output_dir: outputs #/path/to/your_output_dir
-  data_parallel_mode: ddp
+  data_parallel_mode: ddp # Single-GPU runs do not need FSDP sharding across ranks.
   ulysses_parallel_size: 1
-  global_batch_size: 64
+  global_batch_size: 1 # Keep the effective batch on one device to avoid multi-GPU assumptions.
   micro_batch_size: 1
   rmpad: false
   use_wandb: true
@@ -51,10 +52,12 @@ train:
   lr_decay_ratio: 0.90
   weight_decay: 0.1
   max_grad_norm: 1.0
-  enable_mixed_precision: true
+  enable_mixed_precision: false # Switched because false makes us use bfloat16. Name is seemingly backwards
   enable_gradient_checkpointing: true
-  enable_full_shard: true
-  init_device: meta
+  enable_activation_offload: true
+  activation_gpu_limit: 2.0
+  enable_full_shard: false # Disable ZeRO-3 style full sharding when there is only one GPU.
+  init_device: cuda
   ckpt_manager: dcp
   save_steps: 500
   save_hf_weights: true

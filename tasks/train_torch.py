@@ -222,16 +222,6 @@ def main():
         if args.model.foundation is None:
             args.model.foundation = {}
         args.model.foundation.update(foundation_override)
-    if get_device_type() == "cpu" and args.model.attn_implementation == "flash_attention_2":
-        logger.info("CPU detected; overriding attn_implementation from flash_attention_2 to eager.")
-        args.model.attn_implementation = "eager"
-    if get_device_type() == "cpu":
-        if args.train.data_parallel_mode != "fsdp1":
-            logger.info(f"CPU detected; overriding data_parallel_mode from {args.train.data_parallel_mode} to fsdp1.")
-            args.train.data_parallel_mode = "fsdp1"
-        if args.train.init_device != "cpu":
-            logger.info(f"CPU detected; overriding init_device from {args.train.init_device} to cpu.")
-            args.train.init_device = "cpu"
     logger.info(f"Process rank: {args.train.global_rank}, world size: {args.train.world_size}")
     logger.info_rank0(json.dumps(asdict(args), indent=2))
     if get_device_type() != "cpu":
