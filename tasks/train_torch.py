@@ -196,6 +196,17 @@ def _freeze_backbone_for_ttt(model) -> List[str]:
     return trainable_param_names
 
 
+def _clip_grad_norm_compat(model, max_norm: float):
+    dp_mode = get_parallel_state().dp_mode
+    if dp_mode == "ddp":
+        params = [p for p in model.parameters() if p.requires_grad]
+        if not params:
+            return 0.0
+        grad_norm = torch.nn.utils.clip_grad_norm_(params, max_norm)
+        return grad_norm.item() if hasattr(grad_norm, "item") else float(grad_norm)
+    return veomni_clip_grad_norm(model, max_norm)
+
+
 def main():
     foundation_override = _pop_dict_cli_arg("--model.foundation")
 
@@ -466,7 +477,7 @@ def main():
                 total_loss += loss.item()
                 del micro_batch
 
-            grad_norm = veomni_clip_grad_norm(model, args.train.max_grad_norm)
+            grad_norm = _clip_grad_norm_compat(model, args.train.max_grad_norm)
 
             optimizer.step()
             lr_scheduler.step()
