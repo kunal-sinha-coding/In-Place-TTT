@@ -54,7 +54,7 @@ train:
   enable_mixed_precision: true
   enable_gradient_checkpointing: true
   enable_full_shard: true
-  init_device: meta
+  init_device: cuda #meta # Change based on the hardware I have
   ckpt_manager: dcp
   save_steps: 500
   save_hf_weights: true
