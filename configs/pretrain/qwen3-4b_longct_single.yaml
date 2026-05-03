@@ -51,7 +51,7 @@ train:
   lr_decay_ratio: 0.90
   weight_decay: 0.1
   max_grad_norm: 1.0
-  enable_mixed_precision: true
+  enable_mixed_precision: false # False loads bf16 weights; FlashAttention does not support fp32 here.
   enable_gradient_checkpointing: true
   enable_full_shard: true
   init_device: cuda #meta # Change based on the hardware I have
