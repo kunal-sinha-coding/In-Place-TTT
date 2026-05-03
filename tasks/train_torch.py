@@ -80,10 +80,18 @@ logger = helper.create_logger(__name__)
 
 
 @dataclass
+class LocalTrainingArguments(TrainingArguments):
+    save_checkpoints: bool = field(
+        default=True,
+        metadata={"help": "Whether to save model checkpoints during or after training."},
+    )
+
+
+@dataclass
 class Arguments:
     model: "ModelArguments" = field(default_factory=ModelArguments)
     data: "DataArguments" = field(default_factory=DataArguments)
-    train: "TrainingArguments" = field(default_factory=TrainingArguments)
+    train: "LocalTrainingArguments" = field(default_factory=LocalTrainingArguments)
 
 
 def _filter_kwargs_for_callable(fn, kwargs: Dict[str, Any]) -> Dict[str, Any]:
@@ -499,7 +507,7 @@ def main():
                 if global_step == args.train.profile_end_step:
                     profiler.stop()
 
-            if args.train.save_steps and global_step % args.train.save_steps == 0:
+            if args.train.save_checkpoints and args.train.save_steps and global_step % args.train.save_steps == 0:
                 helper.empty_cache()
                 save_checkpoint_path = os.path.join(args.train.save_checkpoint_path, f"global_step_{global_step}")
                 state = {
@@ -521,7 +529,7 @@ def main():
         data_loader_tqdm.close()
         start_step = 0
         helper.print_device_mem_info(f"VRAM usage after epoch {epoch + 1}")
-        if args.train.save_epochs and (epoch + 1) % args.train.save_epochs == 0:
+        if args.train.save_checkpoints and args.train.save_epochs and (epoch + 1) % args.train.save_epochs == 0:
             helper.empty_cache()
             save_checkpoint_path = os.path.join(args.train.save_checkpoint_path, f"global_step_{global_step}")
             state = {
