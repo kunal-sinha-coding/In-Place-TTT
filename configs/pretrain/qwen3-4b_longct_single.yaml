@@ -28,7 +28,7 @@ data:
   dataloader_type: native
   datasets_type: iterable
   data_type: plaintext
-  max_seq_len: 65536
+  max_seq_len: 1024 #65536
   text_keys: content_split
   drop_last: true
 
