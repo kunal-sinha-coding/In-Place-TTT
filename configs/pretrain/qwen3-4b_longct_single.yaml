@@ -19,7 +19,7 @@ model:
     ttt_mode: true
     ttt_proj: true
     ttt_lr: 3
-    ttt_chunk: 4096
+    ttt_chunk: 128 #4096
     ttt_target: freeze
 
 data:
@@ -36,7 +36,7 @@ train:
   output_dir: outputs #/path/to/your_output_dir
   data_parallel_mode: ddp
   ulysses_parallel_size: 1
-  global_batch_size: 1 #64
+  global_batch_size: 16 #64
   micro_batch_size: 1
   rmpad: false
   use_wandb: true
